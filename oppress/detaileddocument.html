@@ -5,321 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文件详情</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 更换为 qrcode-generator 库 -->
     <script src="https://cdn.jsdelivr.net/gh/annacom155/ccouo/json/js/qr.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            padding: 20px;
-            min-height: 100vh;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            background-color: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #e91e63, #f48fb1);
-        }
-        
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        h1 i {
-            color: #e91e63;
-        }
-        
-        .file-info {
-            background: linear-gradient(to right, #f9f9f9, #fefefe);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            border: 1px solid #eee;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        }
-        
-        .info-item {
-            margin-bottom: 20px;
-            padding: 16px 20px;
-            background-color: white;
-            border-left: 4px solid #e91e63;
-            border-radius: 8px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-        
-        .info-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        
-        .info-label {
-            font-weight: 600;
-            color: #e91e63;
-            margin-bottom: 8px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .info-value {
-            color: #2c3e50;
-            font-size: 16px;
-            word-break: break-all;
-            line-height: 1.5;
-        }
-        
-        .paths-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .paths-section {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .path-box, .qrcode-box {
-            background-color: #f9f9f9;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #eee;
-        }
-        
-        .path-box h3, .qrcode-box h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .path-item {
-            background-color: #f1f8ff;
-            color: #0366d6;
-            padding: 14px 18px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 14px;
-            word-break: break-all;
-            border: 1px solid #d1e6ff;
-            transition: all 0.2s;
-        }
-        
-        .path-item:hover {
-            background-color: #e8f4ff;
-        }
-        
-        .url-box {
-            background: linear-gradient(to right, #f0f9f0, #f8fdf8);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #4CAF50;
-        }
-        
-        .url-label {
-            font-weight: 600;
-            color: #4CAF50;
-            margin-bottom: 10px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .url-value {
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            background-color: white;
-            padding: 14px;
-            border-radius: 8px;
-            word-break: break-all;
-            font-size: 14px;
-            line-height: 1.5;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid #eee;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background-color: #e91e63;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
-        }
-        
-        .btn:hover {
-            background-color: #d81b60;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(233, 30, 99, 0.3);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.3);
-        }
-        
-        .btn-success {
-            background-color: #4CAF50;
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
-        }
-        
-        .btn-success:hover {
-            background-color: #43a047;
-            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
-        }
-        
-        .btn-info {
-            background-color: #17a2b8;
-            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.2);
-        }
-        
-        .btn-info:hover {
-            background-color: #138496;
-            box-shadow: 0 6px 16px rgba(23, 162, 184, 0.3);
-        }
-        
-        .qrcode-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-top: 10px;
-        }
-        
-        #qrcode {
-            width: 200px;
-            height: 200px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .qrcode-label {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-        }
-        
-        .copy-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s;
-        }
-        
-        .copy-notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .file-icon {
-            font-size: 24px;
-            color: #e91e63;
-            margin-right: 10px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #888;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #ddd;
-        }
-        
-        .qr-canvas {
-            max-width: 100%;
-            height: auto;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        body { background: #f8f9fa; padding: 20px; min-height: 100vh; color: #2c3e50; }
+        .container { max-width: 1000px; margin: 30px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #eaeaea; }
+        h1 { color: #111; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+        h1 i { color: #111; }
+        .file-info { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #eee; }
+        .info-item { margin-bottom: 15px; padding: 15px; background: white; border-left: 3px solid #111; border-radius: 6px; }
+        .info-label { font-weight: 500; color: #111; margin-bottom: 5px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        .info-value { color: #333; font-size: 15px; word-break: break-all; line-height: 1.5; }
+        .preview-section { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #eee; }
+        .preview-section h3 { color: #111; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .preview-container { display: flex; justify-content: center; align-items: center; padding: 20px; background: white; border-radius: 6px; min-height: 200px; }
+        .preview-image { max-width: 100%; max-height: 500px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .preview-video { max-width: 100%; max-height: 500px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .preview-audio { width: 100%; max-width: 500px; }
+        .paths-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        @media (max-width: 768px) { .paths-section { grid-template-columns: 1fr; } }
+        .path-box, .qrcode-box { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #eee; }
+        .path-box h3, .qrcode-box h3 { color: #111; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .path-item { background: #f5f5f5; color: #111; padding: 12px 15px; margin-bottom: 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 13px; word-break: break-all; border: 1px solid #e0e0e0; }
+        .url-box { background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px; border-left: 3px solid #111; }
+        .url-label { font-weight: 500; color: #111; margin-bottom: 8px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        .url-value { font-family: 'Consolas', 'Monaco', 'Courier New', monospace; background: white; padding: 12px; border-radius: 6px; word-break: break-all; font-size: 13px; line-height: 1.5; border: 1px solid #e0e0e0; }
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; background: #111; color: white; text-decoration: none; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .btn:hover { background: #333; transform: translateY(-2px); }
+        .btn-secondary { background: #666; }
+        .btn-secondary:hover { background: #555; }
+        .btn-success { background: #444; }
+        .btn-success:hover { background: #333; }
+        .btn-info { background: #555; }
+        .btn-info:hover { background: #444; }
+        .qrcode-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: white; border-radius: 6px; margin-top: 10px; border: 1px solid #eee; }
+        #qrcode { width: 200px; height: 200px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; }
+        .qrcode-label { font-size: 13px; color: #666; text-align: center; margin-top: 10px; }
+        .copy-notification { position: fixed; bottom: 20px; right: 20px; background: #111; color: white; padding: 12px 20px; border-radius: 6px; display: flex; align-items: center; gap: 8px; z-index: 1000; opacity: 0; transform: translateY(20px); transition: all 0.3s; }
+        .copy-notification.show { opacity: 1; transform: translateY(0); }
+        .file-icon { font-size: 20px; color: #111; margin-right: 6px; }
+        .empty-state { text-align: center; padding: 30px 20px; color: #888; }
+        .empty-state i { font-size: 40px; margin-bottom: 15px; color: #ddd; }
+        .qr-canvas { max-width: 100%; height: auto; }
+        .unsupported-preview { text-align: center; padding: 30px 20px; color: #666; }
+        .unsupported-preview i { font-size: 40px; margin-bottom: 15px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -337,6 +67,8 @@
                 <div class="info-value" id="filePath">正在加载...</div>
             </div>
         </div>
+        
+        <div id="previewArea"></div>
         
         <div class="paths-section">
             <div class="path-box">
@@ -384,7 +116,6 @@
     </div>
 
     <script>
-        // 获取URL参数
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
@@ -393,7 +124,92 @@
             };
         }
         
-        // 显示复制成功提示
+        function getProxyUrl(file, path) {
+            const filePath = path ? `${path}/${file}` : file;
+            return `https://ccouo.cn/wwwcn/kpi/file.php?file=${filePath}`;
+        }
+        
+        function addImagePreview(file, path) {
+            const previewArea = document.getElementById('previewArea');
+            previewArea.innerHTML = `
+                <div class="preview-section">
+                    <h3><i class="fas fa-image"></i> 图片预览</h3>
+                    <div class="preview-container">
+                        <img src="${getProxyUrl(file, path)}" alt="${file}" class="preview-image" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\"><rect width=\"100%\" height=\"100%\" fill=\"%23f0f0f0\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dy=\".3em\" font-family=\"sans-serif\" font-size=\"16\" fill=\"%23999\"></text></svg>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function addVideoPreview(file, path) {
+            const previewArea = document.getElementById('previewArea');
+            previewArea.innerHTML = `
+                <div class="preview-section">
+                    <h3><i class="fas fa-video"></i> 视频预览</h3>
+                    <div class="preview-container">
+                        <video controls class="preview-video">
+                            <source src="${getProxyUrl(file, path)}" type="video/mp4">
+                            <source src="${getProxyUrl(file, path)}" type="video/webm">
+                            <source src="${getProxyUrl(file, path)}" type="video/ogg">
+                            您的浏览器不支持视频播放
+                        </video>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function addAudioPreview(file, path) {
+            const previewArea = document.getElementById('previewArea');
+            previewArea.innerHTML = `
+                <div class="preview-section">
+                    <h3><i class="fas fa-music"></i> 音频预览</h3>
+                    <div class="preview-container">
+                        <audio controls class="preview-audio">
+                            <source src="${getProxyUrl(file, path)}" type="audio/mpeg">
+                            <source src="${getProxyUrl(file, path)}" type="audio/wav">
+                            <source src="${getProxyUrl(file, path)}" type="audio/ogg">
+                            您的浏览器不支持音频播放
+                        </audio>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function addUnsupportedPreview() {
+            const previewArea = document.getElementById('previewArea');
+            previewArea.innerHTML = `
+                <div class="preview-section">
+                    <h3><i class="fas fa-eye"></i> 文件预览</h3>
+                    <div class="unsupported-preview">
+                        <i class="fas fa-file-alt"></i>
+                        <p>此文件类型不支持在线预览</p>
+                        <p style="font-size: 13px; color: #999; margin-top: 10px;">请下载文件后查看</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function checkFileTypeAndPreview(file, path) {
+            const fileName = file.toLowerCase();
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
+            const videoExtensions = ['.mp4', '.webm', '.avi', '.mov', '.mkv', '.flv', '.m4v'];
+            const audioExtensions = ['.mp3', '.wav', '.ogg', '.flac', '.m4a', '.aac'];
+            
+            const isImage = imageExtensions.some(ext => fileName.endsWith(ext));
+            const isVideo = videoExtensions.some(ext => fileName.endsWith(ext));
+            const isAudio = audioExtensions.some(ext => fileName.endsWith(ext));
+            
+            if (isImage) {
+                addImagePreview(file, path);
+            } else if (isVideo) {
+                addVideoPreview(file, path);
+            } else if (isAudio) {
+                addAudioPreview(file, path);
+            } else {
+                addUnsupportedPreview();
+            }
+        }
+        
         function showCopyNotification() {
             const notification = document.getElementById('copyNotification');
             notification.classList.add('show');
@@ -403,48 +219,41 @@
             }, 3000);
         }
         
-        // 页面加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
             const { file, path } = getUrlParams();
             
-            // 如果没有文件参数，显示空状态
             if (!file) {
                 document.getElementById('fileName').textContent = '未指定文件';
                 document.getElementById('filePath').textContent = '无';
                 document.getElementById('fullPath').textContent = '无';
                 document.getElementById('githubPath').textContent = '无';
                 document.getElementById('proxyUrl').textContent = '无';
+                addUnsupportedPreview();
                 return;
             }
             
-            // 更新文件名
             document.getElementById('fileName').textContent = file;
             
-            // 更新文件路径
             const filePath = path ? `${path}/${file}` : file;
             document.getElementById('filePath').textContent = filePath;
             
-            // 更新完整路径
             document.getElementById('fullPath').textContent = filePath;
             
-            // 更新GitHub Raw链接
             const githubRawUrl = `https://raw.githubusercontent.com/annacom155/ccouo/main/${filePath}`;
             document.getElementById('githubPath').textContent = githubRawUrl;
             
-            // 更新代理URL
-            const proxyUrl = `https://ccouo.cn/wwwcn/kpi/yuzusoft.php?url=https://cdn.jsdelivr.net/gh/annacom155/ccouo/${filePath}`;
+            const proxyUrl = getProxyUrl(file, path);
             document.getElementById('proxyUrl').textContent = proxyUrl;
             
-            // 生成二维码
+            checkFileTypeAndPreview(file, path);
+            
             generateQRCode(proxyUrl);
             
-            // 添加复制功能
             window.copyProxyUrl = function() {
                 const proxyUrl = document.getElementById('proxyUrl').textContent;
                 navigator.clipboard.writeText(proxyUrl)
                     .then(() => showCopyNotification())
                     .catch(err => {
-                        // 如果clipboard API不可用，使用传统方法
                         const textArea = document.createElement('textarea');
                         textArea.value = proxyUrl;
                         document.body.appendChild(textArea);
@@ -460,7 +269,6 @@
                 navigator.clipboard.writeText(githubUrl)
                     .then(() => showCopyNotification())
                     .catch(err => {
-                        // 如果clipboard API不可用，使用传统方法
                         const textArea = document.createElement('textarea');
                         textArea.value = githubUrl;
                         document.body.appendChild(textArea);
@@ -482,14 +290,11 @@
             };
         });
         
-        // 使用 qrcode-generator 生成二维码
         function generateQRCode(url) {
             const qrcodeElement = document.getElementById('qrcode');
             
-            // 清空之前的二维码
             qrcodeElement.innerHTML = '';
             
-            // 如果URL为空，显示提示
             if (!url || url === '正在生成...' || url === '无') {
                 qrcodeElement.innerHTML = `
                     <div class="empty-state">
@@ -501,12 +306,10 @@
             }
             
             try {
-                // 使用 qrcode-generator
-                const qr = qrcode(0, 'M'); // 0 = 自动版本, M = 纠错级别(15%)
+                const qr = qrcode(0, 'M');
                 qr.addData(url);
                 qr.make();
                 
-                // 创建canvas元素
                 const canvas = document.createElement('canvas');
                 canvas.width = 200;
                 canvas.height = 200;
@@ -514,19 +317,15 @@
                 
                 const ctx = canvas.getContext('2d');
                 
-                // 计算单元格大小
                 const moduleCount = qr.getModuleCount();
-                const cellSize = 200 / (moduleCount + 8); // 添加边距
-                const offset = 4 * cellSize; // 边距
+                const cellSize = 200 / (moduleCount + 8);
+                const offset = 4 * cellSize;
                 
-                // 设置白色背景
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, 200, 200);
                 
-                // 设置前景色
-                ctx.fillStyle = '#2c3e50';
+                ctx.fillStyle = '#111';
                 
-                // 绘制二维码
                 for (let row = 0; row < moduleCount; row++) {
                     for (let col = 0; col < moduleCount; col++) {
                         if (qr.isDark(row, col)) {
@@ -540,7 +339,6 @@
                     }
                 }
                 
-                // 添加到页面
                 qrcodeElement.appendChild(canvas);
                 
             } catch (error) {
