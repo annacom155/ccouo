@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件详情</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 更换为 qrcode-generator 库 -->
+    <script src="https://cdn.jsdelivr.net/gh/annacom155/ccouo/json/js/qr.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #e91e63, #f48fb1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        h1 i {
+            color: #e91e63;
+        }
+        
+        .file-info {
+            background: linear-gradient(to right, #f9f9f9, #fefefe);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+        
+        .info-item {
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            background-color: white;
+            border-left: 4px solid #e91e63;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #e91e63;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-value {
+            color: #2c3e50;
+            font-size: 16px;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        
+        .paths-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .paths-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .path-box, .qrcode-box {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+        
+        .path-box h3, .qrcode-box h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .path-item {
+            background-color: #f1f8ff;
+            color: #0366d6;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            border: 1px solid #d1e6ff;
+            transition: all 0.2s;
+        }
+        
+        .path-item:hover {
+            background-color: #e8f4ff;
+        }
+        
+        .url-box {
+            background: linear-gradient(to right, #f0f9f0, #f8fdf8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .url-label {
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .url-value {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background-color: white;
+            padding: 14px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background-color: #e91e63;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+        }
+        
+        .btn:hover {
+            background-color: #d81b60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(233, 30, 99, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-success {
+            background-color: #4CAF50;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+        
+        .btn-success:hover {
+            background-color: #43a047;
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.2);
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+            box-shadow: 0 6px 16px rgba(23, 162, 184, 0.3);
+        }
+        
+        .qrcode-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 10px;
+        }
+        
+        #qrcode {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qrcode-label {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+        }
+        
+        .copy-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .file-icon {
+            font-size: 24px;
+            color: #e91e63;
+            margin-right: 10px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        .qr-canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-file-alt"></i> 文件详情</h1>
+        
+        <div class="file-info">
+            <div class="info-item">
+                <div class="info-label"><i class="fas fa-file"></i> 文件名</div>
+                <div class="info-value" id="fileName">正在加载...</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label"><i class="fas fa-folder"></i> 文件路径</div>
+                <div class="info-value" id="filePath">正在加载...</div>
+            </div>
+        </div>
+        
+        <div class="paths-section">
+            <div class="path-box">
+                <h3><i class="fas fa-link"></i> 链接信息</h3>
+                <div class="info-label">完整路径：</div>
+                <div class="path-item" id="fullPath">正在计算路径...</div>
+                
+                <div class="info-label">GitHub Raw 链接：</div>
+                <div class="path-item" id="githubPath">正在生成链接...</div>
+            </div>
+            
+            <div class="qrcode-box">
+                <h3><i class="fas fa-qrcode"></i> 二维码</h3>
+                <div class="url-box">
+                    <div class="url-label"><i class="fas fa-bolt"></i> 国内直链代理 URL</div>
+                    <div class="url-value" id="proxyUrl">正在生成...</div>
+                </div>
+                
+                <div class="qrcode-container">
+                    <div id="qrcode"></div>
+                    <div class="qrcode-label">扫描二维码访问代理链接</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button onclick="copyProxyUrl()" class="btn btn-success">
+                <i class="fas fa-copy"></i> 复制代理链接
+            </button>
+            <button onclick="copyGitHubUrl()" class="btn btn-info">
+                <i class="fas fa-copy"></i> 复制GitHub链接
+            </button>
+            <button onclick="downloadQRCode()" class="btn btn-secondary">
+                <i class="fas fa-download"></i> 下载二维码
+            </button>
+            <a href="github_admim.php" class="btn">
+                <i class="fas fa-arrow-left"></i> 返回文件列表
+            </a>
+        </div>
+    </div>
+
+    <div id="copyNotification" class="copy-notification">
+        <i class="fas fa-check-circle"></i>
+        <span>链接已复制到剪贴板！</span>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                file: params.get('file') || '',
+                path: params.get('path') || ''
+            };
+        }
+        
+        // 显示复制成功提示
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            const { file, path } = getUrlParams();
+            
+            // 如果没有文件参数，显示空状态
+            if (!file) {
+                document.getElementById('fileName').textContent = '未指定文件';
+                document.getElementById('filePath').textContent = '无';
+                document.getElementById('fullPath').textContent = '无';
+                document.getElementById('githubPath').textContent = '无';
+                document.getElementById('proxyUrl').textContent = '无';
+                return;
+            }
+            
+            // 更新文件名
+            document.getElementById('fileName').textContent = file;
+            
+            // 更新文件路径
+            const filePath = path ? `${path}/${file}` : file;
+            document.getElementById('filePath').textContent = filePath;
+            
+            // 更新完整路径
+            document.getElementById('fullPath').textContent = filePath;
+            
+            // 更新GitHub Raw链接
+            const githubRawUrl = `https://raw.githubusercontent.com/annacom155/ccouo/main/${filePath}`;
+            document.getElementById('githubPath').textContent = githubRawUrl;
+            
+            // 更新代理URL
+            const proxyUrl = `https://ccouo.cn/wwwcn/kpi/yuzusoft.php?url=https://cdn.jsdelivr.net/gh/annacom155/ccouo/${filePath}`;
+            document.getElementById('proxyUrl').textContent = proxyUrl;
+            
+            // 生成二维码
+            generateQRCode(proxyUrl);
+            
+            // 添加复制功能
+            window.copyProxyUrl = function() {
+                const proxyUrl = document.getElementById('proxyUrl').textContent;
+                navigator.clipboard.writeText(proxyUrl)
+                    .then(() => showCopyNotification())
+                    .catch(err => {
+                        // 如果clipboard API不可用，使用传统方法
+                        const textArea = document.createElement('textarea');
+                        textArea.value = proxyUrl;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showCopyNotification();
+                    });
+            };
+            
+            window.copyGitHubUrl = function() {
+                const githubUrl = document.getElementById('githubPath').textContent;
+                navigator.clipboard.writeText(githubUrl)
+                    .then(() => showCopyNotification())
+                    .catch(err => {
+                        // 如果clipboard API不可用，使用传统方法
+                        const textArea = document.createElement('textarea');
+                        textArea.value = githubUrl;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showCopyNotification();
+                    });
+            };
+            
+            window.downloadQRCode = function() {
+                const qrCodeCanvas = document.querySelector('#qrcode canvas');
+                if (qrCodeCanvas) {
+                    const link = document.createElement('a');
+                    link.download = `二维码-${file.replace(/\.[^/.]+$/, "")}.png`;
+                    link.href = qrCodeCanvas.toDataURL('image/png');
+                    link.click();
+                }
+            };
+        });
+        
+        // 使用 qrcode-generator 生成二维码
+        function generateQRCode(url) {
+            const qrcodeElement = document.getElementById('qrcode');
+            
+            // 清空之前的二维码
+            qrcodeElement.innerHTML = '';
+            
+            // 如果URL为空，显示提示
+            if (!url || url === '正在生成...' || url === '无') {
+                qrcodeElement.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-qrcode"></i>
+                        <p>无法生成二维码</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                // 使用 qrcode-generator
+                const qr = qrcode(0, 'M'); // 0 = 自动版本, M = 纠错级别(15%)
+                qr.addData(url);
+                qr.make();
+                
+                // 创建canvas元素
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 200;
+                canvas.className = 'qr-canvas';
+                
+                const ctx = canvas.getContext('2d');
+                
+                // 计算单元格大小
+                const moduleCount = qr.getModuleCount();
+                const cellSize = 200 / (moduleCount + 8); // 添加边距
+                const offset = 4 * cellSize; // 边距
+                
+                // 设置白色背景
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 200, 200);
+                
+                // 设置前景色
+                ctx.fillStyle = '#2c3e50';
+                
+                // 绘制二维码
+                for (let row = 0; row < moduleCount; row++) {
+                    for (let col = 0; col < moduleCount; col++) {
+                        if (qr.isDark(row, col)) {
+                            ctx.fillRect(
+                                offset + col * cellSize,
+                                offset + row * cellSize,
+                                cellSize,
+                                cellSize
+                            );
+                        }
+                    }
+                }
+                
+                // 添加到页面
+                qrcodeElement.appendChild(canvas);
+                
+            } catch (error) {
+                console.error('生成二维码失败:', error);
+                qrcodeElement.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>二维码生成失败</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
