@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 移除移动端viewport设置，固定为电脑宽度 -->
+    <title>免费图床与GitHub管理服务</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/annacom155/ccouo/json/css/www_main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" type="image/x-icon" href="https://ccouo.cn/icon.png" reportloaderror>
+    <style>
+        /* 覆盖响应式样式，固定为3008px宽度 */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-width: 1880px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        .container {
+            width: 2800px;
+            max-width: 2800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏样式 */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            width: 100%;
+            min-width: 3008px;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 2800px;
+            margin: 0 auto;
+        }
+        
+        .nav-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 4rem;
+        }
+        
+        .nav-link {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 1.8rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+        
+        /* 页头样式 */
+        header {
+            position: relative;
+            height: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 100px;
+            overflow: hidden;
+            width: 100%;
+            min-width: 3008px;
+        }
+        
+        .header-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: -2;
+        }
+        
+        .header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+        
+        .header-content {
+            text-align: center;
+            z-index: 1;
+            max-width: 2000px;
+        }
+        
+        .header-content h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+        
+        .subtitle {
+            font-size: 2.5rem;
+            color: #cccccc;
+            margin-bottom: 3rem;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* 主内容区域 */
+        main {
+            margin-top: 4rem;
+            margin-bottom: 4rem;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card h2 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .card h2 i {
+            color: #3b82f6;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem 3rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px);
+        }
+        
+        /* 代码块样式 */
+        .code-block {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.6rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        
+        .method {
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .url {
+            color: #3b82f6;
+        }
+        
+        /* 高亮盒子 */
+        .highlight-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+        
+        /* 架构图样式 */
+        .architecture {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+        
+        .architecture-step {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        /* 列表样式 */
+        .benefit-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+        
+        .benefit-list li {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .benefit-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 1.5rem;
+            font-size: 2rem;
+        }
+        
+        /* 网格布局 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 页脚 */
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 3rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            min-width: 3008px;
+        }
+        
+        /* 动画效果 */
+        .fade-in, .slide-in-left, .slide-in-right, .scale-in, .float {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .slide-in-left {
+            transform: translateX(-50px);
+        }
+        
+        .slide-in-left.visible {
+            transform: translateX(0);
+        }
+        
+        .slide-in-right {
+            transform: translateX(50px);
+        }
+        
+        .slide-in-right.visible {
+            transform: translateX(0);
+        }
+        
+        .scale-in {
+            transform: scale(0.9);
+        }
+        
+        .scale-in.visible {
+            transform: scale(1);
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* 图片托管部分特殊样式 */
+        .image-hosting-section {
+            text-align: center;
+            padding: 6rem 4rem;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 30px;
+            margin: 4rem 0;
+        }
+        
+        .image-hosting-icon {
+            font-size: 8rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .image-hosting-section h2 {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* 问题列表 */
+        .problem-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+        
+        .problem-list li {
+            padding: 1.5rem 2rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ef4444;
+            font-size: 1.6rem;
+        }
+        
+        /* 对比表格样式 */
+        .comparison-table {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .comparison-column {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 3rem;
+        }
+        
+        .comparison-column h3 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* 响应式调整 - 禁用 */
+        @media (max-width: 3008px) {
+            body {
+                overflow-x: auto;
+            }
+            
+            .container {
+                width: 2800px;
+                min-width: 2800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-container">
+            <a href="#" class="nav-logo slide-in-left">图床与GitHub管理</a>
+            <div class="nav-links">
+                <a href="#hosting" class="nav-link">免费图床</a>
+                <a href="#github-management" class="nav-link">GitHub管理</a>
+                <a href="#github-api" class="nav-link">外网直链代理</a>
+                <a href="#features" class="nav-link">功能特色</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页头 -->
+    <header>
+        <div class="header-background"></div>
+        <div class="header-overlay"></div>
+        <div class="container header-content">
+            <h1 class="fade-in">免费图床与GitHub仓库管理服务</h1>
+            <p class="subtitle fade-in" style="transition-delay: 0.2s;">专为开发者打造的高效图片托管与GitHub国内加速解决方案</p>
+            <a href="#hosting" class="btn btn-primary fade-in" style="transition-delay: 0.4s;">
+                <i class="fas fa-arrow-down"></i> 立即使用
+            </a>
+        </div>
+    </header>
+
+
+        <!-- 行动号召 -->
+        <div class="card fade-in" style="text-align: center; padding: 4rem;">
+            <h2 style="font-size: 3.5rem; color: white; margin-bottom: 2rem;">开始使用我们的服务</h2>
+            <p style="font-size: 1.8rem; color: #cccccc; margin-bottom: 3rem; max-width: 2000px; margin-left: auto; margin-right: auto;">
+                免费图床、GitHub加速、完整API文档，一站式解决您的开发需求。
+            </p>
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                <a href="https://www.ccouo.cn/wwwcn/github_admim.php" class="btn btn-primary" style="padding: 1.5rem 3rem; font-size: 1.8rem;">
+                    <i class="fas fa-images"></i> 免费图床
+                </a>
+                <a href="https://www.ccouo.cn/cdn/login.html" class="btn" style="padding: 1.5rem 3rem; font-size: 1.8rem;">
+                    <i class="fab fa-github"></i> 管理GitHub
+                </a>
+                <a href="https://www.ccouo.cn/wwwcn/urldocs.html" class="btn" style="padding: 1.5rem 3rem; font-size: 1.8rem;">
+                    <i class="fas fa-book"></i> 外网直链代理教程
+                </a>
+            </div>
+        </div>
+    </main>
+
+
+    <main class="container">
+        <!-- 免费图床部分 -->
+        <section id="hosting" class="card fade-in">
+            <h2><i class="fas fa-images"></i> 免费图床服务</h2>
+            <p style="font-size: 1.8rem; margin-bottom: 2rem; color: #cccccc;">
+                我们提供专业的图片托管服务，<strong style="color: #3b82f6;">完美支持Node.js后端集成</strong>。无需注册，完全免费使用！
+            </p>
+            
+            <div class="highlight-box scale-in">
+                <h3 style="color: white; margin-bottom: 1.5rem; font-size: 2.2rem;">
+                    <i class="fas fa-bolt"></i> Node.js后端友好
+                </h3>
+                <ul style="color: #e5e5e5; font-size: 1.6rem; line-height: 1.8; padding-left: 2rem;">
+                    <li>RESTful API接口，轻松集成到任何Node.js项目</li>
+                    <li>支持多图片批量上传，提高开发效率</li>
+                    <li>提供CDN加速，全球访问速度快</li>
+                    <li>自动图片优化和格式转换</li>
+                    <li>详细的API文档和代码示例</li>
+                </ul>
+            </div>
+            
+            <div class="architecture" style="margin-top: 3rem;">
+                <div class="architecture-step">
+                    <div class="step-number float">1</div>
+                    <div class="step-content">
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem;">快速上传</h3>
+                        <p style="color: #cccccc; font-size: 1.6rem;">通过简单API调用上传图片，支持多种格式和大小</p>
+                    </div>
+                </div>
+                
+                <div class="architecture-step">
+                    <div class="step-number float" style="animation-delay: 0.5s;">2</div>
+                    <div class="step-content">
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem;">自动处理</h3>
+                        <p style="color: #cccccc; font-size: 1.6rem;">系统自动优化图片，生成不同尺寸的缩略图</p>
+                    </div>
+                </div>
+                
+                <div class="architecture-step">
+                    <div class="step-number float" style="animation-delay: 1s;">3</div>
+                    <div class="step-content">
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem;">CDN分发</h3>
+                        <p style="color: #cccccc; font-size: 1.6rem;">通过全球CDN网络快速分发，提升加载速度</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="./github_admim.php" class="btn btn-primary" style="margin-right: 2rem; padding: 1.5rem 3rem; font-size: 1.8rem;">
+                    <i class="fas fa-external-link-alt"></i> 前往图床管理
+                </a>
+                <a href="#github-api" class="btn" style="padding: 1.5rem 3rem; font-size: 1.8rem;">
+                    <i class="fas fa-code"></i> 查看API文档
+                </a>
+            </div>
+        </section>
+
+        <!-- GitHub仓库管理部分 -->
+        <section id="github-management" class="card fade-in">
+            <h2><i class="fab fa-github"></i> 管理您的GitHub仓库</h2>
+            <p style="font-size: 1.8rem; margin-bottom: 2rem; color: #cccccc;">
+                我们与GitHub官方的主要区别：<strong style="color: #10b981;">国内CDN加速，无需VPN即可高速访问</strong>。让您的GitHub仓库在国内网络环境下也能快速加载和使用。
+            </p>
+            
+            <div class="comparison-table">
+                <div class="comparison-column scale-in">
+                    <div style="font-size: 4rem; color: #ef4444; margin-bottom: 1.5rem; text-align: center;">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h3>GitHub官方</h3>
+                    <ul style="color: #cccccc; margin-top: 1.5rem; font-size: 1.6rem; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 1rem;">国内访问需要VPN</li>
+                        <li style="margin-bottom: 1rem;">加载速度不稳定</li>
+                        <li style="margin-bottom: 1rem;">图片资源可能被墙</li>
+                        <li style="margin-bottom: 1rem;">API调用延迟高</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-column scale-in" style="animation-delay: 0.2s; border: 2px solid #10b981;">
+                    <div style="font-size: 4rem; color: #10b981; margin-bottom: 1.5rem; text-align: center;">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>我们的服务</h3>
+                    <ul style="color: #cccccc; margin-top: 1.5rem; font-size: 1.6rem; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 1rem;"><strong style="color: #10b981;">国内CDN加速，无需VPN</strong></li>
+                        <li style="margin-bottom: 1rem;">稳定高速访问</li>
+                        <li style="margin-bottom: 1rem;">图片资源正常加载</li>
+                        <li style="margin-bottom: 1rem;">API调用响应快速</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 3rem;">
+                <h3 style="font-size: 2.5rem; color: white; margin-bottom: 2rem;">核心优势：</h3>
+                <ul class="benefit-list slide-in-left">
+                    <li><strong style="color: #3b82f6;">永久免费</strong>：基础服务完全免费，无使用限制</li>
+                    <li><strong style="color: #3b82f6;">CDN加速</strong>：国内多节点CDN，访问速度快人一步</li>
+                    <li><strong style="color: #3b82f6;">无需VPN</strong>：直接访问，无需额外网络工具</li>
+                    <li><strong style="color: #3b82f6;">易于集成</strong>：提供完整的API和SDK支持</li>
+                    <li><strong style="color: #3b82f6;">数据同步</strong>：与GitHub仓库实时同步，数据不丢失</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin-top: 4rem; padding: 3rem; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 2px solid #3b82f6;">
+                <h3 style="font-size: 2.5rem; color: white; margin-bottom: 1.5rem;">开始管理您的GitHub仓库</h3>
+                <p style="color: #cccccc; font-size: 1.6rem; margin-bottom: 2rem;">
+                    连接您的GitHub账户，体验国内高速访问的畅快感
+                </p>
+                <a href="https://www.ccouo.cn/cdn/login.html" class="btn btn-primary" style="padding: 1.5rem 4rem; font-size: 1.8rem;">
+                    <i class="fas fa-rocket"></i> 开始管理GitHub仓库
+                </a>
+            </div>
+        </section>
+
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container" style="text-align: center;">
+            <p style="font-size: 1.8rem; margin-bottom: 1rem;">© 2026 免费图床与GitHub管理服务</p>
+            <p style="color: #666; font-size: 1.4rem;">专为开发者打造，让图片托管和GitHub访问从未如此简单</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right, .scale-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            const nav = document.querySelector('nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    nav.style.backgroundColor = 'rgba(0, 0, 0, 0.98)';
+                    nav.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.5)';
+                } else {
+                    nav.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+                    nav.style.boxShadow = 'none';
+                }
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 120,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-15px)';
+                    this.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.4)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+                });
+            });
+            
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // 为特征卡片添加鼠标悬停效果
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-15px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
